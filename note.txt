@@ -1,0 +1,170 @@
+Testing with Postman
+Register a User
+URL: http://127.0.0.1:8000/api/auth/register/
+Method: POST
+Payload:
+json
+{
+    "username": "sahil",
+    "email": "sahil@example.com",
+    "password": "password123"
+}
+Expected Response:
+json
+{
+    "message": "User registered successfully"
+}
+
+Login a User
+URL: http://127.0.0.1:8000/api/auth/login/
+Method: POST
+Payload:
+json
+{
+    "username": "sahil",
+    "password": "password123"
+}
+Expected Response:
+json
+{
+    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc0NzMwMjUzNSwiaWF0IjoxNzQ3MjE2MTM1LCJqdGkiOiJkMzI5MTRmMjI1MzU0MmE2YmVkODE4ZWYxNzg0YjU4NCIsInVzZXJfaWQiOjR9.-VTHCXgMnukWzSOpwhqojqcLInpXqdDUdGPHndxyqcE",
+    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ3MjE3OTM1LCJpYXQiOjE3NDcyMTYxMzUsImp0aSI6Ijk5NDliYTRlMDE4ODQ4MDc4YTFlZGRmNmY2NzM3NWRhIiwidXNlcl9pZCI6NH0.r3rbmKt9d4HSRfv4dNUIsNIF5k1M-Ha9ml5iWlogg3E",
+    "message": "Login successful"
+}
+
+Test the Protected API
+URL: http://127.0.0.1:8000/api/protected/
+Method: GET
+Headers:
+Authorization: Bearer <access_token>
+Expected Response:
+json
+{
+    "message": "This is a protected view"
+}
+
+Add a Patient
+URL: http://127.0.0.1:8000/api/patients/
+Method: POST
+Headers:
+Authorization: Bearer <access_token>
+Body:
+json
+{
+    "name": "Vipul",
+    "age": 21,
+    "medical_history": "Hypertension"
+}
+Expected Response:
+{
+    "id": 2,
+    "name": "Vipul",
+    "age": 21,
+    "medical_history": "Hypertension",
+    "created_at": "2025-05-14T10:05:36.866016Z"
+}
+
+Retrieve All Patients
+URL: http://127.0.0.1:8000/api/patients/
+Method: GET
+Headers:
+Authorization: Bearer <access_token>
+Expected Response:
+[
+    {
+        "id": 2,
+        "name": "Vipul",
+        "age": 21,
+        "medical_history": "Hypertension",
+        "created_at": "2025-05-14T10:05:36.866016Z"
+    }
+]
+
+Update a Patient
+URL: http://127.0.0.1:8000/api/patients/1/
+Method: PUT
+Headers:
+Authorization: Bearer <access_token>
+Body:
+json
+{
+    "id": 1,
+    "name": "Vipul",
+    "age": 21,
+    "medical_history": "Hypertension, Diabetes",
+    "created_at": "2025-05-14T09:42:54.799998Z"
+}
+
+Delete a Patient
+URL: http://127.0.0.1:8000/api/patients/1/
+Method: DELETE
+
+Add a Doctor
+URL: http://127.0.0.1:8000/api/doctors/
+Method: POST
+Body:
+{
+    "name": "Dr. Dubey",
+    "specialty": "Cardiology",
+    "contact_info": "123-456-7890"
+}
+Expected Response:
+{
+    "id": 2,
+    "name": "Dr. Dubey",
+    "specialty": "Cardiology",
+    "contact_info": "123-456-7890",
+    "created_at": "2025-05-14T10:21:24.304989Z"
+}
+
+Patient-Doctor Mapping
+URL: http://127.0.0.1:8000/api/mappings/
+Method: POST
+Body:
+json
+{
+    "patient_id": 2,
+    "doctor_id": 1
+}
+Expected Response:
+{
+    "id": 3,
+    "patient": {
+        "id": 2,
+        "name": "Vipul",
+        "age": 21,
+        "medical_history": "Hypertension",
+        "created_at": "2025-05-14T10:05:36.866016Z"
+    },
+    "doctor": {
+        "id": 1,
+        "name": "Dr. Yewale",
+        "specialty": "Cardiology",
+        "contact_info": "123-456-7890",
+        "created_at": "2025-05-14T09:42:54.815712Z"
+    },
+    "assigned_at": "2025-05-14T10:28:54.449147Z"
+}
+
+
+PS C:\Users\acer\OneDrive\Desktop\Projects25\HealStation> python manage.py shell
+In [4]: from api.models import Patient, Doctor, PatientDoctorMapping
+   ...: from django.contrib.auth.models import User
+   ...:
+   ...: # Create a user
+   ...: user = User.objects.create_user(username='john', password='password123')
+   ...:
+   ...: # Create a patient
+   ...: patient = Patient.objects.create(user=user, name='John Doe', age=22)
+   ...:
+   ...: # Create a doctor
+   ...: doctor = Doctor.objects.create(name='Dr. Yewale', specialty='Cardiology', contact_info='123-456-7890')
+   ...:
+   ...: # Create a mapping
+   ...: mapping = PatientDoctorMapping.objects.create(patient=patient, doctor=doctor)
+   ...:
+   ...: # Display the mapping
+   ...: print(mapping)
+John Doe - Dr. Yewale
+
+In [5]: exit()
